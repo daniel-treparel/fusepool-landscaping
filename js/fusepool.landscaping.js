@@ -28,7 +28,7 @@ FusePool = FusePool || {};
 FusePool.Landscaping = {
     /// When set a redraw occurs next timer event
     update: true,
-    debugRenderParticlesOnly: true,
+    debugRenderParticlesOnly: false,
     debugFullBlast: true, // if set ignore this.update
     /**
      * Initialize the Landscape component.
@@ -267,12 +267,14 @@ FusePool.Landscaping.initThree = function (width, height) {
  * @author: Daniël van Adrichem <daniel@treparel.com>
  */
 FusePool.Landscaping.Shaders = {
+    // screen aligned quad
     vertexShader: [
         "varying vec2 pixel;",
         "",
         "void main(void) {",
         "    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
-        "    pixel = uv;",
+        "    gl_Position = sign( gl_Position );",
+        "    pixel = (vec2( gl_Position.x, gl_Position.y ) + vec2( 1.0 ) ) / vec2( 2.0 );",
         "}"
     ].join('\n'),
     
@@ -345,7 +347,7 @@ FusePool.Landscaping.Shaders = {
         "    sum += texture2D(src_tex, vec2(pixel.x, + 9.0*v + pixel.y) ) * 0.008074244714835564;",
         "",
         "    //sum = vec4(0.6);",
-        "    gl_FragColor = /*vec4(pixel * vec2(0.6), 0, 0.1) + */texture2D(dmap_tex, vec2(sum.a, 0));",
+        "    gl_FragColor = /*vec4(pixel * vec2(0.6), 0, 0.1) + */texture2D(dmap_tex, vec2(sum.a, 1));",
         "    gl_FragColor.a = 1.0;",
         "}"
     ].join('\n')
