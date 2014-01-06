@@ -4,99 +4,99 @@
 <head>
     <meta charset="utf-8" />
     <title></title>
-    <style>canvas { width: 100%; height: 100% }</style>
+    <link rel="stylesheet" href="/css/landscape.css">
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" />
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
-        <script type="text/javascript" src="js/jsondata.js"></script>
-		<script type="text/javascript" src="js/three.js"></script>
-        <script type="x-shader/x-vertex" id="vertexshader">
-            varying vec2 pixel;
+    <script type="text/javascript" src="js/jsondata.js"></script>
+    <script type="text/javascript" src="js/three.js"></script>
+    <script type="x-shader/x-vertex" id="vertexshader">
+        varying vec2 pixel;
 
-            void main(void) {
-                
-                gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-                pixel = uv;
+        void main(void) {
 
-            }
-		</script>
-        <script type="x-shader/x-fragment" id="fragmentshaderH">
-            uniform sampler2D src_tex;
-            uniform vec2 pixelSize;
-            uniform float sigma;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+            pixel = uv;
 
-            varying vec2 pixel;
+        }
+    </script>
+    <script type="x-shader/x-fragment" id="fragmentshaderH">
+        uniform sampler2D src_tex;
+        uniform vec2 pixelSize;
+        uniform float sigma;
 
-            void main(void) {
+        varying vec2 pixel;
 
-                float h = sigma * pixelSize.x;
-                vec4 sum = vec4(0.0);
+        void main(void) {
 
-                sum += texture2D(src_tex, vec2(pixel.x - 9.0*h, pixel.y) ) * 0.008074244714835564;
-                sum += texture2D(src_tex, vec2(pixel.x - 8.0*h, pixel.y) ) * 0.01373475292908177;
-                sum += texture2D(src_tex, vec2(pixel.x - 7.0*h, pixel.y) ) * 0.02194807268686863;
-                sum += texture2D(src_tex, vec2(pixel.x - 6.0*h, pixel.y) ) * 0.032947959470316014;
-                sum += texture2D(src_tex, vec2(pixel.x - 5.0*h, pixel.y) ) * 0.0464640702427165;
-                sum += texture2D(src_tex, vec2(pixel.x - 4.0*h, pixel.y) ) * 0.06155489208605796;
-                sum += texture2D(src_tex, vec2(pixel.x - 3.0*h, pixel.y) ) * 0.07660630093247092;
-                sum += texture2D(src_tex, vec2(pixel.x - 2.0*h, pixel.y) ) * 0.08956183951296363;
-                sum += texture2D(src_tex, vec2(pixel.x - 1.0*h, pixel.y) ) * 0.09836443747572207;
-                sum += texture2D(src_tex, vec2(pixel.x + 0.0*h, pixel.y) ) * 0.10148685989793388;
-                sum += texture2D(src_tex, vec2(pixel.x + 1.0*h, pixel.y) ) * 0.09836443747572207;
-                sum += texture2D(src_tex, vec2(pixel.x + 2.0*h, pixel.y) ) * 0.08956183951296363;
-                sum += texture2D(src_tex, vec2(pixel.x + 3.0*h, pixel.y) ) * 0.07660630093247092;
-                sum += texture2D(src_tex, vec2(pixel.x + 4.0*h, pixel.y) ) * 0.06155489208605796;
-                sum += texture2D(src_tex, vec2(pixel.x + 5.0*h, pixel.y) ) * 0.0464640702427165;
-                sum += texture2D(src_tex, vec2(pixel.x + 6.0*h, pixel.y) ) * 0.032947959470316014;
-                sum += texture2D(src_tex, vec2(pixel.x + 7.0*h, pixel.y) ) * 0.02194807268686863;
-                sum += texture2D(src_tex, vec2(pixel.x + 8.0*h, pixel.y) ) * 0.01373475292908177;
-                sum += texture2D(src_tex, vec2(pixel.x + 9.0*h, pixel.y) ) * 0.008074244714835564;
+            float h = sigma * pixelSize.x;
+            vec4 sum = vec4(0.0);
 
-                gl_FragColor = sum;
+            sum += texture2D(src_tex, vec2(pixel.x - 9.0*h, pixel.y) ) * 0.008074244714835564;
+            sum += texture2D(src_tex, vec2(pixel.x - 8.0*h, pixel.y) ) * 0.01373475292908177;
+            sum += texture2D(src_tex, vec2(pixel.x - 7.0*h, pixel.y) ) * 0.02194807268686863;
+            sum += texture2D(src_tex, vec2(pixel.x - 6.0*h, pixel.y) ) * 0.032947959470316014;
+            sum += texture2D(src_tex, vec2(pixel.x - 5.0*h, pixel.y) ) * 0.0464640702427165;
+            sum += texture2D(src_tex, vec2(pixel.x - 4.0*h, pixel.y) ) * 0.06155489208605796;
+            sum += texture2D(src_tex, vec2(pixel.x - 3.0*h, pixel.y) ) * 0.07660630093247092;
+            sum += texture2D(src_tex, vec2(pixel.x - 2.0*h, pixel.y) ) * 0.08956183951296363;
+            sum += texture2D(src_tex, vec2(pixel.x - 1.0*h, pixel.y) ) * 0.09836443747572207;
+            sum += texture2D(src_tex, vec2(pixel.x + 0.0*h, pixel.y) ) * 0.10148685989793388;
+            sum += texture2D(src_tex, vec2(pixel.x + 1.0*h, pixel.y) ) * 0.09836443747572207;
+            sum += texture2D(src_tex, vec2(pixel.x + 2.0*h, pixel.y) ) * 0.08956183951296363;
+            sum += texture2D(src_tex, vec2(pixel.x + 3.0*h, pixel.y) ) * 0.07660630093247092;
+            sum += texture2D(src_tex, vec2(pixel.x + 4.0*h, pixel.y) ) * 0.06155489208605796;
+            sum += texture2D(src_tex, vec2(pixel.x + 5.0*h, pixel.y) ) * 0.0464640702427165;
+            sum += texture2D(src_tex, vec2(pixel.x + 6.0*h, pixel.y) ) * 0.032947959470316014;
+            sum += texture2D(src_tex, vec2(pixel.x + 7.0*h, pixel.y) ) * 0.02194807268686863;
+            sum += texture2D(src_tex, vec2(pixel.x + 8.0*h, pixel.y) ) * 0.01373475292908177;
+            sum += texture2D(src_tex, vec2(pixel.x + 9.0*h, pixel.y) ) * 0.008074244714835564;
 
-            } 
+            gl_FragColor = sum;
 
-        </script>
-        <script type="x-shader/x-fragment" id="fragmentshaderV">
+        }
 
-            uniform sampler2D src_tex;
-            uniform sampler2D dmap_tex;
-            uniform vec2 pixelSize;
-            uniform float sigma;
+    </script>
+    <script type="x-shader/x-fragment" id="fragmentshaderV">
 
-            varying vec2 pixel;
+        uniform sampler2D src_tex;
+        uniform sampler2D dmap_tex;
+        uniform vec2 pixelSize;
+        uniform float sigma;
 
-            void main(void) {
+        varying vec2 pixel;
 
-                float v = sigma * pixelSize.y;
-                vec4 sum = vec4(0.0);
+        void main(void) {
 
-                sum += texture2D(src_tex, vec2(pixel.x, - 9.0*v + pixel.y) ) * 0.008074244714835564;
-                sum += texture2D(src_tex, vec2(pixel.x, - 8.0*v + pixel.y) ) * 0.01373475292908177;
-                sum += texture2D(src_tex, vec2(pixel.x, - 7.0*v + pixel.y) ) * 0.02194807268686863;
-                sum += texture2D(src_tex, vec2(pixel.x, - 6.0*v + pixel.y) ) * 0.032947959470316014;
-                sum += texture2D(src_tex, vec2(pixel.x, - 5.0*v + pixel.y) ) * 0.0464640702427165;
-                sum += texture2D(src_tex, vec2(pixel.x, - 4.0*v + pixel.y) ) * 0.06155489208605796;
-                sum += texture2D(src_tex, vec2(pixel.x, - 3.0*v + pixel.y) ) * 0.07660630093247092;
-                sum += texture2D(src_tex, vec2(pixel.x, - 2.0*v + pixel.y) ) * 0.08956183951296363;
-                sum += texture2D(src_tex, vec2(pixel.x, - 1.0*v + pixel.y) ) * 0.09836443747572207;
-                sum += texture2D(src_tex, vec2(pixel.x, + 0.0*v + pixel.y) ) * 0.10148685989793388;
-                sum += texture2D(src_tex, vec2(pixel.x, + 1.0*v + pixel.y) ) * 0.09836443747572207;
-                sum += texture2D(src_tex, vec2(pixel.x, + 2.0*v + pixel.y) ) * 0.08956183951296363;
-                sum += texture2D(src_tex, vec2(pixel.x, + 3.0*v + pixel.y) ) * 0.07660630093247092;
-                sum += texture2D(src_tex, vec2(pixel.x, + 4.0*v + pixel.y) ) * 0.06155489208605796;
-                sum += texture2D(src_tex, vec2(pixel.x, + 5.0*v + pixel.y) ) * 0.0464640702427165;
-                sum += texture2D(src_tex, vec2(pixel.x, + 6.0*v + pixel.y) ) * 0.032947959470316014;
-                sum += texture2D(src_tex, vec2(pixel.x, + 7.0*v + pixel.y) ) * 0.02194807268686863;
-                sum += texture2D(src_tex, vec2(pixel.x, + 8.0*v + pixel.y) ) * 0.01373475292908177;
-                sum += texture2D(src_tex, vec2(pixel.x, + 9.0*v + pixel.y) ) * 0.008074244714835564;
+            float v = sigma * pixelSize.y;
+            vec4 sum = vec4(0.0);
 
-                //sum = vec4(0.6);
-                gl_FragColor = /*vec4(pixel * vec2(0.6), 0, 0.1) + */texture2D(dmap_tex, vec2(sum.a, 0));
-                gl_FragColor.a = 1.0;
-            }
+            sum += texture2D(src_tex, vec2(pixel.x, - 9.0*v + pixel.y) ) * 0.008074244714835564;
+            sum += texture2D(src_tex, vec2(pixel.x, - 8.0*v + pixel.y) ) * 0.01373475292908177;
+            sum += texture2D(src_tex, vec2(pixel.x, - 7.0*v + pixel.y) ) * 0.02194807268686863;
+            sum += texture2D(src_tex, vec2(pixel.x, - 6.0*v + pixel.y) ) * 0.032947959470316014;
+            sum += texture2D(src_tex, vec2(pixel.x, - 5.0*v + pixel.y) ) * 0.0464640702427165;
+            sum += texture2D(src_tex, vec2(pixel.x, - 4.0*v + pixel.y) ) * 0.06155489208605796;
+            sum += texture2D(src_tex, vec2(pixel.x, - 3.0*v + pixel.y) ) * 0.07660630093247092;
+            sum += texture2D(src_tex, vec2(pixel.x, - 2.0*v + pixel.y) ) * 0.08956183951296363;
+            sum += texture2D(src_tex, vec2(pixel.x, - 1.0*v + pixel.y) ) * 0.09836443747572207;
+            sum += texture2D(src_tex, vec2(pixel.x, + 0.0*v + pixel.y) ) * 0.10148685989793388;
+            sum += texture2D(src_tex, vec2(pixel.x, + 1.0*v + pixel.y) ) * 0.09836443747572207;
+            sum += texture2D(src_tex, vec2(pixel.x, + 2.0*v + pixel.y) ) * 0.08956183951296363;
+            sum += texture2D(src_tex, vec2(pixel.x, + 3.0*v + pixel.y) ) * 0.07660630093247092;
+            sum += texture2D(src_tex, vec2(pixel.x, + 4.0*v + pixel.y) ) * 0.06155489208605796;
+            sum += texture2D(src_tex, vec2(pixel.x, + 5.0*v + pixel.y) ) * 0.0464640702427165;
+            sum += texture2D(src_tex, vec2(pixel.x, + 6.0*v + pixel.y) ) * 0.032947959470316014;
+            sum += texture2D(src_tex, vec2(pixel.x, + 7.0*v + pixel.y) ) * 0.02194807268686863;
+            sum += texture2D(src_tex, vec2(pixel.x, + 8.0*v + pixel.y) ) * 0.01373475292908177;
+            sum += texture2D(src_tex, vec2(pixel.x, + 9.0*v + pixel.y) ) * 0.008074244714835564;
 
-		</script>
+            //sum = vec4(0.6);
+            gl_FragColor = /*vec4(pixel * vec2(0.6), 0, 0.1) + */texture2D(dmap_tex, vec2(sum.a, 0));
+            gl_FragColor.a = 1.0;
+        }
+
+    </script>
         <script>
             var container;
             var scene, scenePing, scenePong, camera, renderer, geometry, material, sprite, radius,
@@ -284,7 +284,7 @@
             }
         </script>
 </head>
-	<body onload="onload();" style="padding:0;margin:0;overflow:hidden">
+	<body onload="onload();">
         <div id="slider_scale"></div>
         <div id="slider_sigma"></div>
     </body>
