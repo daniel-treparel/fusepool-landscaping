@@ -26,6 +26,10 @@ FusePool = FusePool || {};
  * @author: Daniël van Adrichem <daniel@treparel.com>
  */
 FusePool.Landscaping = {
+    /// When set a redraw occurs next timer event
+    update: true,
+    debugRenderParticlesOnly: true,
+    debugFullBlast: true, // if set ignore this.update
     /**
      * Initialize the Landscape component.
      *
@@ -38,15 +42,61 @@ FusePool.Landscaping = {
     initialize: function (selector) {
         this.$container = $(selector);
         console.info("Initializing FusePool.Landscaping: " + this.$container);
-        this.initThree(
+        var canvasElement = this.initThree(
             this.$container.width(),
             this.$container.height()
         );
-        this.$canvas = $(this.renderer.domElement);
-        this.$container.append(this.renderer.domElement);
+        this.$canvas = $(canvasElement);
+        this.$container.append(canvasElement);
+
+        this.initMouseHandlers();
+
         console.info("Initializing FusePool.Landscaping Done (" +
             this.$canvas.width() + "x" + this.$canvas.height() + ")");
+
+        this.renderAll();
     }
+};
+
+/**
+ * Initialize mouse event handlers
+ *
+ * @author: Daniël van Adrichem <daniel@treparel.com>
+ */
+FusePool.Landscaping.initMouseHandlers = function () {
+    var thisLandscaping = this;
+    this.$canvas.on("click", function () {
+        thisLandscaping.update = true;
+    });
+};
+
+FusePool.Landscaping.renderAll = function () {
+    // only render when this bool is set
+    if (this.update || this.debugFullBlast) {
+        console.info("Landscape redraw");
+        // reset update bool
+        this.update = false;
+
+        // update size of dots
+        this.scene.children[0].material.size = this.radius;
+
+        if (this.debugRenderParticlesOnly) {
+            this.renderer.render(this.scene, this.camera);
+        } else {
+            // firstly render the scene containing the dots particle system to
+            // the this.rtTexturePing render target and force clear (the true param)
+            this.renderer.render(this.scene, this.camera, this.rtTexturePing, true);
+            // next render the scene with a quad and shader having source rtTexturePing
+            // this applies horizontal convolution the output is rendered to
+            // this.rtTexturePong
+            this.renderer.render(this.scenePing, this.camera, this.rtTexturePong, true);
+            // finally render the scene consisting of a quad and its shader does
+            // vertical convolution with rtTexturePong as source and no render
+            // target, so output on canvas.
+            this.renderer.render(this.scenePong, this.camera);
+        }
+    }
+    window.requestAnimationFrame(FusePool.Landscaping.renderAll);
 };
 
 /**
@@ -74,8 +124,8 @@ FusePool.Landscaping.initThree = function (width, height) {
     // origin in center of $container, params are:
     // left right top bottom
     this.camera = new THREE.OrthographicCamera(
-        width / -2, width / 2,
-        height / 2, height / -2,
+        -1, 1, // l r
+        1, -1, // t b
         -1, 1);
     this.camera.position.z = 0;
 
@@ -133,6 +183,7 @@ FusePool.Landscaping.initThree = function (width, height) {
     // geometry mesh data, allocate float arrays for
     // both color (rgb) and positions (xyz)
     var geometry = new THREE.BufferGeometry();
+    //this.geometry = geometry;
     geometry.attributes = {
         position: {
             itemSize: 3,
@@ -156,9 +207,9 @@ FusePool.Landscaping.initThree = function (width, height) {
         var pos = 3 * i;
 
         // load positions from jsondata and translate them
-        // positions in json data must not exceed -1..1 for both x and y
-        positions[pos] = ((0.15 + jsondata.rows[i].PX) * width) - (width / 2);
-        positions[pos + 1] = ((-0.2 + jsondata.rows[i].PY) * height) - (height / 2);
+        // positions in json data must not exceed 0..1 for both x and y
+        positions[pos] = (jsondata.rows[i].PX)-0.5;
+        positions[pos + 1] = (jsondata.rows[i].PY)-0.5;
         positions[pos + 2] = 0;
 
         // load colors, init on red
@@ -176,7 +227,7 @@ FusePool.Landscaping.initThree = function (width, height) {
     // material used for dot rendering
     var material = new THREE.ParticleBasicMaterial({
         size: this.radius,
-        map: this.sprite,
+//        map: this.sprite,
         sizeAttenuation: false,
         transparent: true,
         vertexColors: true
@@ -199,14 +250,14 @@ FusePool.Landscaping.initThree = function (width, height) {
     this.renderer = new THREE.WebGLRenderer({
         antialias: false,
         clearAlpha: 0,
+        clearColor: 0x000000,
         alpha: true
     });
     // resize
     this.renderer.setSize(width, height);
 
-    // register mouse events
-//        document.addEventListener('mousewheel', onMouseWheelHandler, false);
-//        document.addEventListener('click', clickHandler, false);
+    // return the canvas
+    return this.renderer.domElement;
 };
 
 
@@ -296,5 +347,6 @@ FusePool.Landscaping.Shaders = {
         "    //sum = vec4(0.6);",
         "    gl_FragColor = /*vec4(pixel * vec2(0.6), 0, 0.1) + */texture2D(dmap_tex, vec2(sum.a, 0));",
         "    gl_FragColor.a = 1.0;",
+        "}"
     ].join('\n')
 };
