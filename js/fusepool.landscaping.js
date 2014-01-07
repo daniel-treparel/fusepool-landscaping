@@ -87,7 +87,9 @@ FusePool.Landscaping.renderAll = function () {
         this.update = false;
 
         // update size of dots
-        this.scene.children[0].material.size = this.radius;
+        this.dotMaterialConv.size = this.radius;
+        this.particleSystem.material = this.dotMaterialConv;
+        this.renderer.clear();
 
         if (this.debugRenderParticlesOnly) {
             this.renderer.render(this.scene, this.camera);
@@ -103,6 +105,8 @@ FusePool.Landscaping.renderAll = function () {
             // vertical convolution with rtTexturePong as source and no render
             // target, so output on canvas.
             this.renderer.render(this.scenePong, this.camera);
+            this.particleSystem.material = this.dotMaterial;
+            this.renderer.render(this.scene, this.camera);
         }
     }
     window.requestAnimationFrame(FusePool.Landscaping.renderAll);
@@ -235,18 +239,29 @@ FusePool.Landscaping.initThree = function (width, height) {
     this.sprite = THREE.ImageUtils.loadTexture("img/dot.png");
     // size of the dot
     this.radius = 10;
-    // material used for dot rendering
-    var material = new THREE.ParticleBasicMaterial({
+    // material used for dot rendering which will be convoluted
+    this.dotMaterialConv = new THREE.ParticleBasicMaterial({
         depthTest: false,
         size: this.radius,
 //        map: this.sprite,
         sizeAttenuation: false,
         transparent: true,
-        vertexColors: true
+        // only using red in blur shader
+        color: 0xFF0000
+    });
+    // material used for final dot rendering
+    this.dotMaterial = new THREE.ParticleBasicMaterial({
+        depthTest: false,
+        size: 3,
+//        map: this.sprite,
+        sizeAttenuation: false,
+        transparent: true,
+        color: 0x000000
+        //vertexColors: true
     });
 
     // add particle system to the main scene
-    this.particleSystem = new THREE.ParticleSystem(geometry, material);
+    this.particleSystem = new THREE.ParticleSystem(geometry, this.dotMaterial);
     this.scene.add(this.particleSystem);
 
     // plane geometry used to render fullscreen using convolution shader
@@ -267,6 +282,7 @@ FusePool.Landscaping.initThree = function (width, height) {
     });
     // resize
     this.renderer.setSize(width, height);
+    this.renderer.autoClear = false;
 
     // return the canvas
     return this.renderer.domElement;
