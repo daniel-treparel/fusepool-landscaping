@@ -77,6 +77,20 @@ FusePool.Landscaping.initMouseHandlers = function () {
     this.$canvas.on("click", function () {
         thisLandscaping.update = true;
     });
+    this.$canvas.on("mousewheel", function(event) {
+//        console.log(event.deltaX, event.deltaY, event.deltaFactor);
+        // 0.05 will be 10% larger or smaller, because it applies to both left
+        // and right and top and bottom. We flip the sign, so scrolling
+        // away from oneselfzoom out
+        var zoomFactor = 1 + -event.deltaY * 0.05;
+        thisLandscaping.camera.left *= zoomFactor;
+        thisLandscaping.camera.right *= zoomFactor;
+        thisLandscaping.camera.top *= zoomFactor;
+        thisLandscaping.camera.bottom *= zoomFactor;
+        thisLandscaping.camera.updateProjectionMatrix();
+        console.debug(thisLandscaping.camera);
+        thisLandscaping.renderAll();
+    });
 };
 
 FusePool.Landscaping.renderAll = function () {
@@ -300,8 +314,8 @@ FusePool.Landscaping.Shaders = {
         "varying vec2 pixel;",
         "",
         "void main(void) {",
-        //"    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
-        "    gl_Position = sign( vec4(position, 1.0) );",
+        "    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+        "    gl_Position = sign( gl_Position );",
         // pixel will be in range 0..1
         "    pixel = (vec2( gl_Position.x, -gl_Position.y ) + vec2( 1.0 ) ) / vec2( 2.0 );",
         "}"
