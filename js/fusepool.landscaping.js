@@ -40,21 +40,30 @@ FusePool.Landscaping = {
      * @author: Daniël van Adrichem <daniel@treparel.com>
      */
     initialize: function (selector) {
-        this.$container = $(selector);
-        console.info("Initializing FusePool.Landscaping: " + this.$container);
-        var canvasElement = this.initThree(
-            this.$container.width(),
-            this.$container.height()
-        );
-        this.$canvas = $(canvasElement);
-        this.$container.append(canvasElement);
+        var thisLandscaping = this;
 
-        this.initMouseHandlers();
+        // for debug purposes
+        $("#landscape-render-button").on("click", function () {
+            thisLandscaping.renderAll();
+        });
 
-        console.info("Initializing FusePool.Landscaping Done (" +
-            this.$canvas.width() + "x" + this.$canvas.height() + ")");
+        $( document ).ready(function () {
+            thisLandscaping.$container = $(selector);
+            console.info("Initializing FusePool.Landscaping: " + thisLandscaping.$container);
+            var canvasElement = thisLandscaping.initThree(
+                thisLandscaping.$container.width(),
+                thisLandscaping.$container.height()
+            );
+            thisLandscaping.$canvas = $(canvasElement);
+            thisLandscaping.$container.append(canvasElement);
 
-        this.renderAll();
+            thisLandscaping.initMouseHandlers();
+
+            console.info("Initializing FusePool.Landscaping Done (" +
+                thisLandscaping.$canvas.width() + "x" + thisLandscaping.$canvas.height() + ")");
+
+            thisLandscaping.renderAll();
+        });
     }
 };
 
@@ -132,8 +141,8 @@ FusePool.Landscaping.initThree = function (width, height) {
     // texture filtering options
     // bi-linear filtering and no mip maps
     var tex_options = {
-        magFilter: THREE.LinearFilter,
-        minFilter: THREE.LinearFilter,
+        magFilter: THREE.NearestFilter,
+        minFilter: THREE.NearestFilter,
         generateMipmaps: false
     };
 
@@ -157,6 +166,7 @@ FusePool.Landscaping.initThree = function (width, height) {
     };
     // horizontal convolution shader itself
     var shaderMaterialPing = new THREE.ShaderMaterial({
+        depthTest: false,
         uniforms: this.uniformsH,
         vertexShader: FusePool.Landscaping.Shaders.vertexShader,
         fragmentShader: FusePool.Landscaping.Shaders.fragmentShaderH
@@ -172,6 +182,7 @@ FusePool.Landscaping.initThree = function (width, height) {
     };
     // vertical convolution shader itself
     var shaderMaterialPong = new THREE.ShaderMaterial({
+        depthTest: false,
         uniforms: this.uniformsV,
         vertexShader: FusePool.Landscaping.Shaders.vertexShader,
         fragmentShader: FusePool.Landscaping.Shaders.fragmentShaderV
@@ -226,6 +237,7 @@ FusePool.Landscaping.initThree = function (width, height) {
     this.radius = 10;
     // material used for dot rendering
     var material = new THREE.ParticleBasicMaterial({
+        depthTest: false,
         size: this.radius,
 //        map: this.sprite,
         sizeAttenuation: false,
@@ -272,9 +284,10 @@ FusePool.Landscaping.Shaders = {
         "varying vec2 pixel;",
         "",
         "void main(void) {",
-        "    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
-        "    gl_Position = sign( gl_Position );",
-        "    pixel = (vec2( gl_Position.x, gl_Position.y ) + vec2( 1.0 ) ) / vec2( 2.0 );",
+        //"    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+        "    gl_Position = sign( vec4(position, 1.0) );",
+        // pixel will be in range 0..1
+        "    pixel = (vec2( gl_Position.x, -gl_Position.y ) + vec2( 1.0 ) ) / vec2( 2.0 );",
         "}"
     ].join('\n'),
     
@@ -310,6 +323,7 @@ FusePool.Landscaping.Shaders = {
         "    sum += texture2D(src_tex, vec2(pixel.x + 9.0*h, pixel.y) ) * 0.008074244714835564;",
         "",
         "    gl_FragColor = sum;",
+        //"    gl_FragColor = vec4(pixel, 0, 1);",
         "}"
     ].join('\n'),
 
@@ -347,7 +361,7 @@ FusePool.Landscaping.Shaders = {
         "    sum += texture2D(src_tex, vec2(pixel.x, + 9.0*v + pixel.y) ) * 0.008074244714835564;",
         "",
         "    //sum = vec4(0.6);",
-        "    gl_FragColor = /*vec4(pixel * vec2(0.6), 0, 0.1) + */texture2D(dmap_tex, vec2(sum.a, 1));",
+        "    gl_FragColor = /*vec4(pixel * vec2(0.6), 0, 0.1) + */texture2D(dmap_tex, vec2(sum.r, 1));",
         "    gl_FragColor.a = 1.0;",
         "}"
     ].join('\n')
