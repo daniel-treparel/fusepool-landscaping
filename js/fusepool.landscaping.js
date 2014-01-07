@@ -178,7 +178,7 @@ FusePool.Landscaping.initThree = function (width, height) {
 
     // horizontal convolution shader uniforms
     this.uniformsH = {
-        sigma: { type: "f", value: 1 },
+        sigma: { type: "f", value: 1.4 },
         src_tex: { type: "t", value: this.rtTexturePing },
         pixelSize: { type: "v2", value: new THREE.Vector2(h, v)}
     };
@@ -193,7 +193,7 @@ FusePool.Landscaping.initThree = function (width, height) {
 
     // vertical convolution shader uniforms
     this.uniformsV = {
-        sigma: { type: "f", value: 1 },
+        sigma: { type: "f", value: 1.4 },
         src_tex: { type: "t", value: this.rtTexturePong },
         dmap_tex: { type: "t", value: dmap },
         pixelSize: { type: "v2", value: new THREE.Vector2(h, v)}
@@ -251,13 +251,17 @@ FusePool.Landscaping.initThree = function (width, height) {
 
     // load dot.png
     this.sprite = THREE.ImageUtils.loadTexture("img/dot.png");
+    this.sprite.generateMipmaps = true;
+    this.sprite.magFilter = THREE.NearestFilter;
+    this.sprite.minFilter = THREE.LinearMipMapLinearFilter;
+    this.sprite.needsUpdate = true;
     // size of the dot
-    this.radius = 10;
+    this.radius = 20;
     // material used for dot rendering which will be convoluted
     this.dotMaterialConv = new THREE.ParticleBasicMaterial({
         depthTest: false,
         size: this.radius,
-//        map: this.sprite,
+        map: this.sprite,
         sizeAttenuation: false,
         transparent: true,
         // only using red in blur shader
@@ -266,11 +270,13 @@ FusePool.Landscaping.initThree = function (width, height) {
     // material used for final dot rendering
     this.dotMaterial = new THREE.ParticleBasicMaterial({
         depthTest: false,
-        size: 3,
-//        map: this.sprite,
+        size: 5,
+        map: this.sprite,
         sizeAttenuation: false,
         transparent: true,
-        color: 0x000000
+        color: 0x0,
+        opacity: 1,
+//        blending: THREE.AdditiveBlending
         //vertexColors: true
     });
 
