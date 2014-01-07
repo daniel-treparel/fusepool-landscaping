@@ -256,7 +256,7 @@ FusePool.Landscaping.initThree = function (width, height) {
     this.sprite.minFilter = THREE.LinearMipMapLinearFilter;
     this.sprite.needsUpdate = true;
     // size of the dot
-    this.radius = 20;
+    this.radius = 30;
     // material used for dot rendering which will be convoluted
     this.dotMaterialConv = new THREE.ParticleBasicMaterial({
         depthTest: false,
@@ -270,7 +270,7 @@ FusePool.Landscaping.initThree = function (width, height) {
     // material used for final dot rendering
     this.dotMaterial = new THREE.ParticleBasicMaterial({
         depthTest: false,
-        size: 5,
+        size: 10,
         map: this.sprite,
         sizeAttenuation: false,
         transparent: true,
